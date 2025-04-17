@@ -1,5 +1,13 @@
 import mongoose, { Document, Types, Schema } from "mongoose";
-const contentType = ["image", "video", "article", "audio"];
+const contentType = [
+  "image",
+  "video",
+  "article",
+  "audio",
+  "document",
+  "youtube",
+  "tweet",
+];
 
 export interface Icontent extends Document {
   link: string;
@@ -22,11 +30,19 @@ const ContentSchema: Schema<Icontent> = new Schema({
     required: true,
     enum: contentType,
   },
+
+  // Change with video
+
+  // tags: {
+  //   type: [mongoose.Schema.Types.ObjectId],
+  //   ref: "Tags",
+  //   required: true,
+  // },
   tags: {
-    type: [mongoose.Schema.Types.ObjectId],
-    ref: "Tags",
+    type: [String],
     required: true,
   },
+
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Users",

@@ -35,7 +35,7 @@ export const signup = async (
     const checkUserExist = await userModel.findOne({ email });
     if (checkUserExist) {
       return res.status(403).json({
-        success: true,
+        success: false,
         message: "User is already exist || Login ",
       });
     }
@@ -120,6 +120,32 @@ export const login = async (req: Request, res: Response): Promise<Response> => {
       success: true,
       message: "You successfully login 🤩",
       userData: ExistingUser,
+    });
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return res.status(500).json({
+        success: false,
+        message: "Interval Server error",
+        error: error.message,
+      });
+    } else {
+      return res.status(500).json({
+        success: false,
+        message: "Interval Server error",
+        error: "Unknow Error",
+      });
+    }
+  }
+};
+
+export const logout = (req: Request, res: Response) => {
+  try {
+    res.cookie("token", "", {
+      maxAge: 0,
+    });
+    return res.json({
+      success: true,
+      message: "logout Successfully",
     });
   } catch (error: unknown) {
     if (error instanceof Error) {

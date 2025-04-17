@@ -1,30 +1,31 @@
 import { Response, Request } from "express";
 import { ContentModel, Icontent } from "../db/Schema/Content.schema";
 import mongoose from "mongoose";
+import { CustomRequest } from "../middleware/auth.middleware";
 const ShouldThisTypes = ["document", "tweet", "youtube", "link"];
-export const addnewContent = async (req: Request, res: Response) => {
+export const addnewContent = async (req: CustomRequest, res: Response) => {
   try {
     const { types, link, titles, tags } = req.body as Icontent;
-    if (!types || !link || !titles || tags) {
+    if (!types || !link || !titles || !tags) {
       return res.status(400).json({
         success: false,
         message: "Enter all the fields",
       });
     }
 
-    ShouldThisTypes.map((type) => {
-      if (type !== types) {
-        return res.status(404).json({
-          success: false,
-          message: "Another Types are using,Please use valid Types",
-        });
-      }
-    });
+    if (!ShouldThisTypes.includes(types)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid type. Please use a valid type.",
+      });
+    }
+
     const ContentData = await ContentModel.create({
       types,
       link,
       titles,
       tags,
+      userId: req.user._id,
     });
     return res.status(200).json({
       success: true,
@@ -104,7 +105,7 @@ export const deletecontent = async (req: Request, res: Response) => {
 export const updatecontent = async (req: Request, res: Response) => {
   const { id } = req.params as any;
   const updatedcontent = req.body;
-  if (mongoose.Types.ObjectId.isValid(id)) {
+  if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(404).json({
       success: false,
       message: "Content does not find",
@@ -112,7 +113,7 @@ export const updatecontent = async (req: Request, res: Response) => {
   }
   try {
     const updatedData = await ContentModel.findOneAndUpdate(
-      id,
+      { _id: id },
       updatedcontent,
       {
         new: true,
