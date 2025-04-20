@@ -72,6 +72,7 @@ export const signup = async (
       success: true,
       message: "Account created successfully",
       User,
+      userId: User._id,
     });
   } catch (error: unknown) {
     if (error instanceof Error) {
@@ -120,6 +121,7 @@ export const login = async (req: Request, res: Response): Promise<Response> => {
       success: true,
       message: "You successfully login 🤩",
       userData: ExistingUser,
+      userId: ExistingUser._id,
     });
   } catch (error: unknown) {
     if (error instanceof Error) {
@@ -142,6 +144,10 @@ export const logout = (req: Request, res: Response) => {
   try {
     res.cookie("token", "", {
       maxAge: 0,
+      httpOnly: true,
+      sameSite: "strict",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
     });
     return res.json({
       success: true,

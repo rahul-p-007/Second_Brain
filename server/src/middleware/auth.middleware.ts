@@ -15,7 +15,8 @@ const SECRET = process.env.SECRET_KEY as string;
 export const isAuthenticated = async (
   req: CustomRequest,
   res: Response,
-  next: NextFunction
+  //@ts-ignore
+  next
 ) => {
   try {
     const token = req.cookies?.token;
@@ -37,7 +38,7 @@ export const isAuthenticated = async (
       });
     }
 
-    req.user = user; // This gets picked up by your controller logic
+    req.user = user;
     next();
   } catch (error) {
     return res.status(500).json({

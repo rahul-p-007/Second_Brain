@@ -19,6 +19,9 @@ export const generateToken = (userId: Types.ObjectId, res: Response) => {
     maxAge: 7 * 24 * 60 * 60 * 1000,
     httpOnly: true,
     sameSite: "strict",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    domain: process.env.COOKIE_DOMAIN || undefined,
   });
   return token;
 };

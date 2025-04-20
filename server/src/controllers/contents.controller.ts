@@ -141,3 +141,36 @@ export const updatecontent = async (req: Request, res: Response) => {
     }
   }
 };
+
+export const getUserContent = async (req: CustomRequest, res: Response) => {
+  const userId = req.user?._id;
+
+  if (!userId) {
+    return res.status(400).json({
+      success: false,
+      message: "User ID not found in request",
+    });
+  }
+
+  try {
+    const content = await ContentModel.find({ userId });
+
+    return res.json({
+      success: true,
+      content,
+    });
+  } catch (error) {
+    if (error instanceof Error) {
+      return res.status(500).json({
+        success: false,
+        message: "Internal Server Error",
+        error: error.message,
+      });
+    } else {
+      return res.status(500).json({
+        success: false,
+        message: "Unknown error occurred",
+      });
+    }
+  }
+};
