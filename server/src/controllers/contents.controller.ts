@@ -153,7 +153,10 @@ export const getUserContent = async (req: CustomRequest, res: Response) => {
   }
 
   try {
-    const content = await ContentModel.find({ userId });
+    const content = await ContentModel.find({ userId: userId }).populate(
+      "userId",
+      "name"
+    );
 
     return res.json({
       success: true,
