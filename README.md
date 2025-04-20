@@ -1,0 +1,1 @@
+![CodeRabbit Pull Request Reviews](https://img.shields.io/coderabbit/prs/github/rahul-p-007/Second_Brain?utm_source=oss&utm_medium=github&utm_campaign=rahul-p-007%2FSecond_Brain&labelColor=171717&color=FF570A&link=https%3A%2F%2Fcoderabbit.ai&label=CodeRabbit+Reviews)
