@@ -5,6 +5,8 @@ import {
   deletecontent,
   getallcontent,
   getUserContent,
+  share,
+  shareLink,
   updatecontent,
 } from "../controllers/contents.controller";
 import { isAuthenticated } from "../middleware/auth.middleware";
@@ -20,3 +22,5 @@ contentRoutes.delete(
 );
 contentRoutes.put("/content/:id", isAuthenticated as any, updatecontent as any);
 contentRoutes.get("/user", isAuthenticated as any, getUserContent as any);
+contentRoutes.post("/share", isAuthenticated as any, share as any);
+contentRoutes.get("/share/:hash", shareLink as any);

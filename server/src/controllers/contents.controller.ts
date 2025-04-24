@@ -2,6 +2,9 @@ import { Response, Request } from "express";
 import { ContentModel, Icontent } from "../db/Schema/Content.schema";
 import mongoose from "mongoose";
 import { CustomRequest } from "../middleware/auth.middleware";
+import { LinkModel } from "../db/Schema/Link.schema";
+import { random } from "../utils/Random";
+import { userModel } from "../db/Schema/User.schema";
 const ShouldThisTypes = ["document", "tweet", "youtube", "link"];
 export const addnewContent = async (req: CustomRequest, res: Response) => {
   try {
@@ -176,4 +179,74 @@ export const getUserContent = async (req: CustomRequest, res: Response) => {
       });
     }
   }
+};
+export const share = async (req: CustomRequest, res: Response) => {
+  const share = req.body.share;
+
+  if (share) {
+    const existingLink = await LinkModel.findOne({
+      userId: req.user._id,
+    });
+
+    if (existingLink) {
+      return res.json({
+        success: true,
+        message: "/share/" + existingLink.hash,
+      });
+    }
+
+    const hash = random(10);
+    await LinkModel.create({
+      userId: req.user._id,
+      hash: hash,
+    });
+
+    return res.json({
+      success: true,
+      message: "/share/" + hash,
+    });
+  } else {
+    await LinkModel.deleteOne({
+      userId: req.user._id,
+    });
+
+    return res.json({
+      success: true,
+      message: "Deleted sharable link",
+    });
+  }
+};
+
+export const shareLink = async (req: Request, res: Response) => {
+  const { hash } = req.params;
+  console.log("hash", hash);
+
+  const link = await LinkModel.findOne({
+    hash,
+  });
+  console.log(link);
+  if (!link) {
+    res.status(411).json({
+      message: "Sorry incorrect input",
+    });
+    return;
+  }
+  console.log("userId from link:", link.userId);
+
+  const content = await ContentModel.find({
+    userId: link.userId,
+  });
+  const user = await userModel.findOne({
+    _id: new mongoose.Types.ObjectId(link.userId),
+  });
+  if (!user) {
+    res.status(411).json({
+      message: "user not found",
+    });
+    return;
+  }
+  res.json({
+    username: user.name,
+    content: content,
+  });
 };
